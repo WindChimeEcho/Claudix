@@ -413,6 +413,10 @@ function handleKeydown(event: KeyboardEvent) {
 
   // 其他按键处理
   if (event.key === 'Enter' && !event.shiftKey) {
+    // 检查是否正在输入法组合状态(中文输入法等)
+    if (event.isComposing) {
+      return
+    }
     event.preventDefault()
     handleSubmit()
   }
