@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ChatHeader from './components/ChatHeader.vue';
+import ChatMessageList from './components/ChatMessageList.vue';
 import { ref, computed, inject, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import { RuntimeKey } from '../../composables/runtimeContext';
 import { useSession } from '../../composables/useSession';
@@ -10,10 +11,6 @@ import type { AttachmentItem } from '../../types/attachment';
 import { convertFileToAttachment } from '../../types/attachment';
 import ChatInputBox from '../../components/ChatInputBox.vue';
 import PermissionRequestModal from '../../components/PermissionRequestModal.vue';
-import Spinner from '../../components/Messages/WaitingIndicator.vue';
-import ClaudeWordmark from '../../components/ClaudeWordmark.vue';
-import RandomTip from '../../components/RandomTip.vue';
-import MessageRenderer from '../../components/Messages/MessageRenderer.vue';
 import { useKeybinding } from '../../utils/useKeybinding';
 import { useSignal } from '@gn8/alien-signals-vue';
 import type { PermissionMode } from '@anthropic-ai/claude-agent-sdk';
@@ -80,8 +77,7 @@ const progressPercentage = computed(() => {
 });
 
 // DOM refs
-const containerEl = ref<HTMLDivElement | null>(null);
-const endEl = ref<HTMLDivElement | null>(null);
+const messageListRef = ref<InstanceType<typeof ChatMessageList> | null>(null);
 
 // 附件状态管理
 const attachments = ref<AttachmentItem[]>([]);
@@ -98,13 +94,7 @@ function stringify(m: any): string {
 }
 
 function scrollToBottom(): void {
-  const end = endEl.value;
-  if (!end) return;
-  requestAnimationFrame(() => {
-    try {
-      end.scrollIntoView({ block: 'end' });
-    } catch { }
-  });
+  messageListRef.value?.scrollToBottom();
 }
 
 watch(session, async () => {
@@ -285,33 +275,9 @@ function handleResolvePermission(request: PermissionRequest, allow: boolean) {
     <ChatHeader :title="title" @newChat="newChat" @menuClick="$emit('switchToSessions')" />
     <!-- 主体：消息容器 -->
     <div class="main">
-      <!-- <div class="chatContainer"> -->
-      <div ref="containerEl"
-        :class="['messagesContainer', 'custom-scroll-container', { dimmed: permissionRequestsLen > 0 }]">
-        <template v-if="messages.length === 0">
-          <div v-if="isBusy" class="emptyState">
-            <div class="emptyWordmark">
-              <ClaudeWordmark class="emptyWordmarkSvg" />
-            </div>
-          </div>
-          <div v-else class="emptyState">
-            <div class="emptyWordmark">
-              <ClaudeWordmark class="emptyWordmarkSvg" />
-            </div>
-            <RandomTip :platform="platform" />
-          </div>
-        </template>
-        <template v-else>
-          <!-- <div class="msg-list"> -->
-          <MessageRenderer v-for="(m, i) in messages" :key="m?.id ?? i" :message="m" :context="toolContext" />
-          <!-- </div> -->
-          <div v-if="isBusy" class="spinnerRow">
-            <Spinner :size="16" :permission-mode="permissionMode" />
-          </div>
-          <div ref="endEl" />
-        </template>
-      </div>
-
+      <ChatMessageList ref="messageListRef" :messages="messages" :is-busy="isBusy"
+        :permission-requests-len="permissionRequestsLen" :platform="platform" :tool-context="toolContext"
+        :permission-mode="permissionMode" />
       <div class="inputContainer">
         <PermissionRequestModal v-if="pendingPermission && toolContext" :request="pendingPermission"
           :context="toolContext" :on-resolve="handleResolvePermission" data-permission-panel="1" />
@@ -322,7 +288,6 @@ function handleResolvePermission(request: PermissionRequest, allow: boolean) {
           @remove-attachment="handleRemoveAttachment" @thinking-toggle="handleToggleThinking"
           @mode-select="handleModeSelect" @model-select="handleModelSelect" />
       </div>
-      <!-- </div> -->
     </div>
   </div>
 </template>
