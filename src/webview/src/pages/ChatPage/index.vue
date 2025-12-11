@@ -327,7 +327,7 @@ function handleResolvePermission(request: PermissionRequest, allow: boolean) {
   </div>
 </template>
 
-<style lang="scss">
+<style>
 .chat-page {
   display: flex;
   flex-direction: column;
