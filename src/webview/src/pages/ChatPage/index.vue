@@ -85,14 +85,6 @@ const attachments = ref<AttachmentItem[]>([]);
 // 记录上次消息数量，用于判断是否需要滚动
 let prevCount = 0;
 
-function stringify(m: any): string {
-  try {
-    return JSON.stringify(m ?? {}, null, 2);
-  } catch {
-    return String(m);
-  }
-}
-
 function scrollToBottom(): void {
   messageListRef.value?.scrollToBottom();
 }
@@ -292,7 +284,7 @@ function handleResolvePermission(request: PermissionRequest, allow: boolean) {
   </div>
 </template>
 
-<style>
+<style scoped>
 .chat-page {
   display: flex;
   flex-direction: column;
@@ -307,62 +299,6 @@ function handleResolvePermission(request: PermissionRequest, allow: boolean) {
   overflow: hidden;
 }
 
-/* Chat 容器与消息滚动容器（对齐 React） */
-.chatContainer {
-  position: relative;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.messagesContainer {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 8px 0 12px;
-  position: relative;
-}
-
-.messagesContainer.dimmed {
-  filter: blur(1px);
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.msg-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 0 12px;
-}
-
-.msg-item {
-  background: var(--vscode-editor-background);
-  border: 1px solid var(--vscode-panel-border);
-  border-radius: 6px;
-  padding: 8px;
-}
-
-.json-block {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: var(--app-monospace-font-family,
-      ui-monospace,
-      SFMono-Regular,
-      Menlo,
-      Monaco,
-      Consolas,
-      'Liberation Mono',
-      'Courier New',
-      monospace);
-  font-size: var(--app-monospace-font-size, 12px);
-  line-height: 1.5;
-  color: var(--vscode-editor-foreground);
-}
-
-/* 其他样式复用 */
-
 /* 输入区域容器 */
 .inputContainer {
   padding: 8px 12px 12px;
@@ -376,22 +312,5 @@ function handleResolvePermission(request: PermissionRequest, allow: boolean) {
   max-width: 1200px;
   width: 100%;
   align-self: center;
-}
-
-/* 空状态样式 */
-.emptyState {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 32px 16px;
-}
-
-.emptyWordmark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 24px;
 }
 </style>

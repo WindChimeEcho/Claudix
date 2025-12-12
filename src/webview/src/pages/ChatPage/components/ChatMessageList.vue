@@ -39,19 +39,13 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="containerEl"
-    :class="['messagesContainer', 'custom-scroll-container', { dimmed: permissionRequestsLen > 0 }]">
+  <div :class="['messagesContainer', 'custom-scroll-container', { dimmed: permissionRequestsLen > 0 }]">
     <template v-if="messages.length === 0">
-      <div v-if="isBusy" class="emptyState">
+      <div class="emptyState">
         <div class="emptyWordmark">
           <ClaudeWordmark class="emptyWordmarkSvg" />
         </div>
-      </div>
-      <div v-else class="emptyState">
-        <div class="emptyWordmark">
-          <ClaudeWordmark class="emptyWordmarkSvg" />
-        </div>
-        <RandomTip :platform="platform" />
+        <RandomTip v-if="!isBusy" :platform="platform" />
       </div>
     </template>
     <template v-else>
@@ -59,7 +53,7 @@ defineExpose({
       <div v-if="isBusy" class="spinnerRow">
         <Spinner :size="16" :permission-mode="permissionMode" />
       </div>
-      <div ref="endEl" />
+      <div ref="endEl" class="scroll-anchor" />
     </template>
   </div>
 </template>
@@ -79,35 +73,25 @@ defineExpose({
   pointer-events: none;
 }
 
-.msg-list {
+.scroll-anchor {
+  height: 0;
+  width: 0;
+}
+
+/* 空状态样式 */
+.emptyState {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 0 12px;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 32px 16px;
 }
 
-.msg-item {
-  background: var(--vscode-editor-background);
-  border: 1px solid var(--vscode-panel-border);
-  border-radius: 6px;
-  padding: 8px;
-}
-
-.json-block {
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-family: var(--app-monospace-font-family,
-      ui-monospace,
-      SFMono-Regular,
-      Menlo,
-      Monaco,
-      Consolas,
-      'Liberation Mono',
-      'Courier New',
-      monospace);
-  font-size: var(--app-monospace-font-size, 12px);
-  line-height: 1.5;
-  color: var(--vscode-editor-foreground);
+.emptyWordmark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
 }
 </style>
