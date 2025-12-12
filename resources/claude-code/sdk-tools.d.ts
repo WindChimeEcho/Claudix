@@ -23,11 +23,11 @@ export type ToolInputSchemas =
   | McpInput
   | NotebookEditInput
   | ReadMcpResourceInput
-  | TimeMachineInput
   | TodoWriteInput
   | WebFetchInput
   | WebSearchInput
-  | MultipleChoiceQuestionInput;
+  | AskUserQuestionInput
+  | AgentOutputInput;
 
 export interface AgentInput {
   /**
@@ -50,6 +50,10 @@ export interface AgentInput {
    * Optional agent ID to resume from. If provided, the agent will continue from the previous execution transcript.
    */
   resume?: string;
+  /**
+   * Set to true to run this agent in the background. Use AgentOutputTool to read the output later.
+   */
+  run_in_background?: boolean;
 }
 export interface BashInput {
   /**
@@ -96,9 +100,14 @@ export interface BashOutputInput {
 }
 export interface ExitPlanModeInput {
   /**
-   * The plan you came up with, that you want to run by the user for approval. Supports markdown. The plan should be pretty concise.
+   * Whether to launch a swarm to implement the plan
    */
-  plan: string;
+  launchSwarm?: boolean;
+  /**
+   * Number of teammates to spawn in the swarm
+   */
+  teammateCount?: number;
+  [k: string]: unknown;
 }
 export interface FileEditInput {
   /**
@@ -253,20 +262,6 @@ export interface ReadMcpResourceInput {
    */
   uri: string;
 }
-export interface TimeMachineInput {
-  /**
-   * The prefix of the user message to rewind to (searches backwards for first match)
-   */
-  message_prefix: string;
-  /**
-   * The new instructions to inject after rewinding, explaining what to do differently
-   */
-  course_correction: string;
-  /**
-   * Whether to restore code changes using file history (default: true)
-   */
-  restore_code?: boolean;
-}
 export interface TodoWriteInput {
   /**
    * The updated todo list
@@ -301,7 +296,7 @@ export interface WebSearchInput {
    */
   blocked_domains?: string[];
 }
-export interface MultipleChoiceQuestionInput {
+export interface AskUserQuestionInput {
   /**
    * Questions to ask the user (1-4 questions)
    *
@@ -1493,4 +1488,18 @@ export interface MultipleChoiceQuestionInput {
   answers?: {
     [k: string]: string;
   };
+}
+export interface AgentOutputInput {
+  /**
+   * The agent ID to retrieve results for
+   */
+  agentId: string;
+  /**
+   * Whether to block until results are ready
+   */
+  block?: boolean;
+  /**
+   * Maximum time to wait in seconds
+   */
+  wait_up_to?: number;
 }

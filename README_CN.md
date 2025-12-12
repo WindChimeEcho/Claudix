@@ -6,6 +6,7 @@
 ![Built with TypeScript](https://img.shields.io/badge/Built%20with-TypeScript-blue?logo=typescript)
 ![License](https://img.shields.io/badge/License-AGPL--3.0-blue)
 
+[![Mentioned in Awesome Claude Code](https://awesome.re/mentioned-badge.svg)](https://github.com/hesreallyhim/awesome-claude-code)
 ![Powered by Claude Agent SDK](https://img.shields.io/badge/Powered%20by-Claude%20Agent%20SDK-orange)
 
 VSCode 扩展，将 Claude Code 直接集成到你的编辑器中。

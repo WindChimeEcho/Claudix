@@ -179,7 +179,7 @@ const props = withDefaults(defineProps<Props>(), {
   placeholder: 'Plan, @ for context, / for commands...',
   readonly: false,
   showSearch: false,
-  selectedModel: 'claude-sonnet-4-5',
+  selectedModel: 'claude-opus-4-5',
   conversationWorking: false,
   attachments: () => [],
   thinkingLevel: 'default_on',
@@ -661,6 +661,11 @@ function handleSubmit() {
   if (textareaRef.value) {
     textareaRef.value.textContent = ''
   }
+
+  // 等待 DOM 更新后重置输入框高度
+  nextTick(() => {
+    autoResizeTextarea()
+  })
 }
 
 function handleStop() {
